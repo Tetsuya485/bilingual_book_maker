@@ -121,7 +121,7 @@ def main():
         type=str,
         choices=sorted(LANGUAGES.keys())
         + sorted([k.title() for k in TO_LANGUAGE_CODE]),
-        default="zh-hans",
+        default="Japanese",
         metavar="LANGUAGE",
         help="language to translate to, available: {%(choices)s}",
     )
@@ -223,6 +223,15 @@ So you are close to reaching the limit. You have to choose your own value, there
         type=str,
         help="your chatgpt password",
     )
+
+    parser.add_argument(
+        "--request_interval",
+        dest="request_interval",
+        type=float,
+        default=0.0,
+        help="interval in seconds between requests to the API",
+    )
+
     chatgpt_account = ""
     chatgpt_password = ""
     options = parser.parse_args()
@@ -309,6 +318,7 @@ So you are close to reaching the limit. You have to choose your own value, there
         prompt_config=parse_prompt_arg(options.prompt_arg),
         chatgptaccount=chatgpt_account,
         chatgptpassword=chatgpt_password,
+        request_interval=options.request_interval,
     )
     # other options
     if options.allow_navigable_strings:

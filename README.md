@@ -50,6 +50,8 @@ Retranslate from start_str to end_str's tag:
 Retranslate start_str's tag:
 `python3 "make_book.py" --book_name "test_books/animal_farm.epub" --retranslate 'test_books/animal_farm_bilingual.epub' 'index_split_002.html' 'in spite of the present book shortage which'`
 - - Add model chatgptaccount, use `--chatgptaccount`, `--chatgptpassword` to pass in ChatGPT PLUS account password for translation, no need to pass key.
+- - Use --request-interval option to set a delay between translation requests in seconds. This may be particularly useful when using Google Translate.
+
 ### Examples
 
 **Note if use `pip install bbook_maker` all commands can change to `bbook args`**

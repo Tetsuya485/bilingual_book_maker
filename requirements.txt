@@ -6,3 +6,4 @@ rich
 tqdm
 tiktoken
 revChatGPT
+termcolor

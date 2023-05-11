@@ -2,6 +2,7 @@ import os
 import pickle
 import string
 import sys
+import time
 from copy import copy
 from pathlib import Path
 
@@ -19,18 +20,19 @@ from .helper import EPUBBookLoaderHelper, not_trans, is_text_link
 
 class EPUBBookLoader(BaseBookLoader):
     def __init__(
-        self,
-        epub_name,
-        model,
-        key,
-        resume,
-        language,
-        model_api_base=None,
-        is_test=False,
-        test_num=5,
-        prompt_config=None,
-        chatgptaccount=None,
-        chatgptpassword=None,
+            self,
+            epub_name,
+            model,
+            key,
+            resume,
+            language,
+            model_api_base=None,
+            is_test=False,
+            test_num=5,
+            prompt_config=None,
+            chatgptaccount=None,
+            chatgptpassword=None,
+            request_interval=0.0,
     ):
         self.epub_name = epub_name
         self.new_epub = epub.EpubBook()
@@ -52,6 +54,7 @@ class EPUBBookLoader(BaseBookLoader):
             self.translate_model, self.accumulated_num, self.translation_style
         )
         self.retranslate = None
+        self.request_interval = request_interval
 
         # monkey patch for # 173
         def _write_items_patch(obj):
@@ -99,10 +102,10 @@ class EPUBBookLoader(BaseBookLoader):
     @staticmethod
     def _is_special_text(text):
         return (
-            text.isdigit()
-            or text.isspace()
-            or is_text_link(text)
-            or all(char in string.punctuation for char in text)
+                text.isdigit()
+                or text.isspace()
+                or is_text_link(text)
+                or all(char in string.punctuation for char in text)
         )
 
     def _make_new_book(self, book):
@@ -134,6 +137,9 @@ class EPUBBookLoader(BaseBookLoader):
         if index % 20 == 0:
             self._save_progress()
 
+        print(f"Waiting for {self.request_interval} seconds...")
+        time.sleep(self.request_interval)
+
         return index
 
     def translate_paragraphs_acc(self, p_list, send_num):
@@ -145,7 +151,7 @@ class EPUBBookLoader(BaseBookLoader):
             for sup in temp_p.find_all("sup"):
                 sup.extract()
             if any(
-                [not p.text, self._is_special_text(temp_p.text), not_trans(temp_p.text)]
+                    [not p.text, self._is_special_text(temp_p.text), not_trans(temp_p.text)]
             ):
                 if i == len(p_list) - 1:
                     self.helper.deal_old(wait_p_list)
@@ -294,15 +300,15 @@ class EPUBBookLoader(BaseBookLoader):
         return filtered_list
 
     def process_item(
-        self,
-        item,
-        index,
-        p_to_save_len,
-        pbar,
-        new_book,
-        trans_taglist,
-        fixstart=None,
-        fixend=None,
+            self,
+            item,
+            index,
+            p_to_save_len,
+            pbar,
+            new_book,
+            trans_taglist,
+            fixstart=None,
+            fixend=None,
     ):
         if not os.path.exists("log"):
             os.makedirs("log")
